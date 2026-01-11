@@ -1,0 +1,9 @@
+#!/bin/bash
+# yabai -m space --focus next && /Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function2
+# output=$(yabai -m space --focus next) && echo "$output" && /Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function2
+
+
+
+# if yabai -m space --focus next; then
+#     /Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function2
+# fi
