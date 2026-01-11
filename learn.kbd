@@ -1,0 +1,754 @@
+(defcfg
+  danger-enable-cmd yes
+  process-unmapped-keys yes
+)
+
+(defsrc
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft up
+  fn   lctl lalt lmet           spc            rmet ralt left down rght
+)
+
+;; (deflayer src
+;;   (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+;;   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+;;   @thap a    s    d    @ayb g    h    j    k    l    ;    '    ret 
+;;   @lshp @aap x    c    v    b    n    m    ,    .    /    @rshp up 
+;;   rpt-any lctl lalt @lmetp         spc            rmet ralt left down rght
+;; )
+
+
+;; (deflayer qwerty
+;;   (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+;;   @grvch  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+;;   @thaq a    s    @mayd @mayb g    h    j    k   l    ;    '    ret 
+;;   @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+;;   @grvch @fnt @pencil lmet           spc            rmet ralt left down rght
+;; )
+;; @fapp
+
+
+;;standard
+
+;; (deflayer qwerty
+;;   (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+;;   @grvch  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+;;   @thaq a    s    @mayd @mayb g    h    j    k   l    ;    '    ret 
+;;   @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+;;   @fnb lctl @fapp lmet           spc            rmet ralt left down rght
+;; )
+
+;; (deflayer thai-q
+;;   (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+;;   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+;;   @engq a    s    d    @mayb g    h    j    k    l    ;    '    ret 
+;;   @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+;;   @grvch @fnt lalt lmet           spc            rmet ralt left down rght
+;; )
+
+
+
+(defalias grvch C-M-u)
+(defalias fnt C-M-t)
+(defalias pencil C-M-p)
+(defalias ccmt C-M-t)
+(defalias ccmu C-M-u)
+(defalias ccmp C-M-p)
+(defalias ccma C-M-a)
+(defalias ccml C-M-l)
+(defalias ccmr C-M-r)
+
+
+(defvirtualkeys
+  company.thebrowser.Browser nop0
+  net.kovidgoyal.kitty nop0
+  com.microsoft.VSCode nop0
+
+  com.apple.keylayout.ABC nop0
+  
+  com.apple.inputmethod.Korean.2SetKorean nop0
+  
+)
+
+(defalias
+  test (switch
+    ((input virtual company.thebrowser.Browser)) 2 break
+    ((input virtual com.microsoft.VSCode)) 3 break
+    ((input virtual com.apple.keylayout.ABC)) 9 break
+    () 1 break
+  )
+)
+
+
+
+(defalias mayerb (layer-toggle yabai))
+(defalias mayerd (layer-toggle lalt-layer))
+
+
+(defalias
+ca (t! charmod a lctrl)
+cau (t! charmod a (layer-toggle sym) )
+czu (t! charmod z (layer-toggle sym) )
+cs (t! charmod s lalt)
+cd (t! charmod d lmet)
+cf (t! charmod f lsft)
+cj (t! charmod j rsft)
+ck (t! charmod k rmet)
+cl (t! charmod l ralt)
+c; (t! charmod ; rctrl)
+csz (t! shiftmod z lsft)
+cstb (t! shiftmod / rsft)
+cz ()
+chmd (t! charmod v @mayerb)
+chmb(t! charmod m @mayerd)
+chmt (t! charmod tab @mayerb)
+chmu (t! charmod S-9 @mayerb)
+)
+
+(deftemplate shiftmod (char mod)
+  (switch 
+    ((key-timing 3 less-than 250)) $char break
+    () (tap-hold-press 200 200 $char $mod) break
+  )
+)
+
+(deftemplate charmod (char mod)
+  (switch 
+    ((key-timing 3 less-than 250)) $char break
+    () (tap-hold-release-timeout 200 500 $char $mod $char) break
+  )
+)
+
+;; don't messed with shift key, i need quick if i hold shift ; ~ 100 ms, it should be : immediately 
+;; but if it trigger hold very fast, can't roll on it, e.g. a key after will be fter
+;; i test with z key also, you can't press z and not release it fast, it contradicts, 
+;; you want when press hold to be shift fastest about 100ms but you want to be able to relax like resting on letter at least 200 ms
+;; so shift key has to be key use little, only type isolate like (), not rolling like zebra can't hold z for long time
+;; you want that to be press only! one time
+;; from what i've said is tap-hold release
+;; i try tap-hold-press like s9, it's okay, you just have to not press z and the key come last must not press the same time that z is down
+;; or else, it became shift
+;; test charmod
+;; (deflayer qwerty
+;;   (lrld-num 1) brdn brup @ccmp @ccmu @ccmt @ccma @ccml @ccmr  next mute vold volu 
+;;   grv  1     2      3    4    5    6    7    8    9    0    -    =    bspc 
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+;;   @thaq a   @cs    @cd @cf g    h    @cj   @ck  @cl    @c;    '    ret 
+;;   @lthp @csa    x    c    v   b     n    @chmb   ,    .    /    @rthp up 
+;;   @fnb lctl @fapp lmet           spc            rmet ralt left down rght
+;; )
+
+
+(defalias ensk (cmd sudo -u xeno sh -c "/Users/xeno/language/en.sh") )
+(defalias thsk (cmd sudo -u xeno sh -c "/Users/xeno/language/th.sh") )
+(defalias fnen (tap-hold-release 200 200 (multi (macro fn @ensk C-f13) (layer-switch qwerty)) (layer-toggle fnlayer)))
+(defalias fnth (tap-hold-release 200 200 (multi (macro fn @thsk M-C-f13) (layer-switch thai-q)) (layer-toggle fnlayer)))
+
+(defalias thaq (tap-hold-press 200 200  (multi (macro @thsk M-C-f13)  (layer-switch thai-q)) (layer-toggle qesc)))
+(defalias engq (tap-hold-press 200 200 (multi  (macro @ensk C-f13) (layer-switch qwerty)) (layer-toggle qesc)))
+;; (defalias engq (tap-hold-press 200 200 (multi  (macro @ensk M-C-f13) (layer-switch qwerty)) (layer-toggle qesc)))
+
+;; (defalias thaq (tap-hold-press 200 200  (multi (macro fn @thsk M-C-f13)  (layer-switch thai-q)) (layer-toggle qesc)))
+;; (defalias engq (tap-hold-press 200 200 (multi  (macro fn @ensk C-f13)  (layer-switch qwerty)) (layer-toggle qesc)))
+
+;; (defalias thaq (tap-hold-press 200 200 (multi @showth (layer-switch realthai-q)) (layer-toggle qesc)))
+;; (defalias engq (tap-hold-press 200 200 (multi @showen (layer-switch qwerty)) (layer-toggle qesc)))
+
+
+(deflayer qwerty
+  lrld brdn brup @ccmp @ccmu @ccmt @ccma @ccml @ccmr  next mute vold volu 
+  grv    1 2      3    4    5    6    7    8    9    0    -    =    bspc 
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+  @thaq a   s    @mayd @mayb g    h    j   k  l    ;    '    ret 
+  @lthp @czu   x    c    v   b     n    @chmb   ,    .    @cstb    @rthp up 
+  @fnth lctl @fapp lmet           spc            rmet ralt left down rght
+)
+
+(defalias
+  uppy (unicode ฟ)
+  upsym   (unicode ↑)     ;; outputs “↑”
+  downsym (unicode ↓)     ;; outputs “↓”
+  rightsym (unicode →)
+  leftsym (unicode ←)     ;; outputs “←” 
+  inhb (unicode ⊣)
+  stml (unicode ⟴)
+)
+
+(deflayer sym
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    esc  _    _    _    _    _ 
+  _    @ybaa _    @asyb _    _    @leftsym @downsym @upsym   @rightsym @stml   _    esc 
+  _    _    _    _    _    _    @inhb    _    esc  _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+
+(deflayer thai-q
+  (lrld-num 1) brdn brup @ccmp @ccmu @ccmt @ccma @ccml @ccmr  next mute vold volu 
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+  @engq a    s    d    @mayb g    h    j    k    l    ;    '    ret 
+  @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+  @fnen lctl lalt lmet           spc            rmet ralt left down rght
+)
+
+(deflayer realthai-q
+  (lrld-num 1) brdn brup @ccmp @ccmu @ccmt @ccma @ccml @ccmr  next mute vold volu 
+  @lgrv @l1   @l2  @l3  @l4  @l5  @l6  @l7  @l8  @l9  @l0  @lmin @leql bspc 
+  tab   @lq   @lw  @le  @lr  @lt  @ly  @lu  @li  @lo  @lp  @lbkt @lrbkt @lbsl 
+  @engq @la   @ls  @ld  @maybth @lg  @lh  @lj  @lk  @ll  @lsemi @lquot ret 
+  @lthpsr @lz   @lx  @lc  @lv  @lb  @ln  @lm  @lcom @ldot @lslsh @rthpsr up 
+  @grvch lctl lalt lmet           spc            rmet ralt left down rght
+)
+
+
+(defalias lthpsr (tap-hold-press 200 200 S-9 (layer-toggle realshiftthai-q)))
+(defalias rthpsr (tap-hold-press 200 200 S-0 (layer-toggle realshiftthai-q)))
+
+
+(deflayer realshiftthai-q
+  (lrld-num 1) brdn brup @ccmp @ccmu @ccmt @ccma @ccml @ccmr  next mute vold volu 
+  @lgrv @lS1  @lS2 @lS3 @lS4 @lS5 @lS6 @lS7 @lS8 @lS9 @lS0 @lSmin @lSeql bspc 
+  tab   @lSq  @lSw @lSe @lSr @lSt @lSy @lSu @lSi @lSo @lSp @lSbkt @lSrbkt @lSbsl 
+  @engq @lSa  @lSs @lSd @maybsth @lSg @lSh @lSj @lSk @lSl @lSsemi @lSquot ret 
+  @lthp @lSz  @lSx @lSc @lSv @lSb @lSn @lSm @lScom @lSdot @lSslsh @rthp up 
+  @grvch lctl lalt lmet           spc            rmet ralt left down rght
+)
+
+
+(defalias
+;; Thai Unicode mappings - standard Thai keyboard layout (Kedmanee)
+;; Numbers row
+
+lgrv (unicode -)
+l1 (unicode ๅ)
+l2 (unicode /)
+l3 (unicode _)
+l4 (unicode ภ)
+l5 (unicode ถ)
+l6 (unicode ุ)
+l7 (unicode ึ)
+l8 (unicode ค)
+l9 (unicode ต)
+l0 (unicode จ)
+lmin (unicode ข)
+leql (unicode ช)
+
+;; Top row (QWERTY -> Thai)
+lq (unicode ๆ)
+lw (unicode ไ)
+le (unicode ำ)
+lr (unicode พ)
+lt (unicode ะ)
+ly (unicode ั)
+lu (unicode ี)
+li (unicode ร)
+lo (unicode น)
+lp (unicode ย)
+lbkt (unicode บ)
+lrbkt (unicode ล)
+lbsl (unicode ฃ)
+
+;; Home row (ASDF -> Thai)
+la (unicode ฟ)
+ls (unicode ห)
+ld (unicode ก)
+lf (unicode ด)
+lg (unicode เ)
+lh (unicode ้)
+lj (unicode ่)
+lk (unicode า)
+ll (unicode ส)
+lsemi (unicode ว)
+lquot (unicode ง)
+
+;; Bottom row (ZXCV -> Thai)
+lz (unicode ผ)
+lx (unicode ป)
+lc (unicode แ)
+lv (unicode อ)
+lb (unicode ิ)
+ln (unicode ื)
+lm (unicode ท)
+lcom (unicode ม)
+ldot (unicode ใ)
+lslsh (unicode ฝ)
+
+;; Shifted characters (uppercase/symbols)
+;; Numbers row shifted
+lS1 (unicode +)
+lS2 (unicode ๑)
+lS3 (unicode ๒)
+lS4 (unicode ๓)
+lS5 (unicode ๔)
+lS6 (unicode ู)
+lS7 (unicode ฿)
+lS8 (unicode ๕)
+lS9 (unicode ๖)
+lS0 (unicode ๗)
+lSmin (unicode ๘)
+lSeql (unicode ๙)
+
+;; Top row shifted
+lSq (unicode ๐)
+lSw (unicode r#"""#)
+lSe (unicode ฎ)
+lSr (unicode ฑ)
+lSt (unicode ธ)
+lSy (unicode ํ)
+lSu (unicode ๊)
+lSi (unicode ณ)
+lSo (unicode ฯ)
+lSp (unicode ญ)
+lSbkt (unicode ฐ)
+lSrbkt (unicode ,)
+lSbsl (unicode ฅ)
+
+;; Home row shifted
+lSa (unicode ฤ)
+lSs (unicode ฆ)
+lSd (unicode ฏ)
+lSf (unicode โ)
+lSg (unicode ฌ)
+lSh (unicode ็)
+lSj (unicode ๋)
+lSk (unicode ษ)
+lSl (unicode ศ)
+lSsemi (unicode ซ)
+lSquot (unicode .)
+
+;; Bottom row shifted
+lSz S-9
+lSx S-0
+lSc (unicode ฉ)
+lSv (unicode ฮ)
+lSb (unicode ฺ)
+lSn (unicode ์)
+lSm (unicode ?)
+lScom (unicode ฒ)
+lSdot (unicode ฬ)
+lSslsh (unicode ฦ)
+
+)
+(defalias maybth (tap-hold-release 200 200 @lf (layer-toggle yabai)))
+(defalias maybsth (tap-hold-release 200 200 @lSf (layer-toggle yabai)))
+
+;; (deflayer qwerty
+;;   (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+;;   @grvch  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+;;   @thaq a    s    @mayd @mayb g    h    j    k   l    ;    '    ret 
+;;   @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+;;   @grvch @fnt @pencil lmet           spc            rmet ralt left down rght
+;; )
+
+;; (deflayer thai-q
+;;   (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+;;   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+;;   @engq a    s    d    @mayb g    h    j    k    l    ;    '    ret 
+;;   @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+;;   @grvch @fnt @pencil lmet           spc            rmet ralt left down rght
+;; )
+
+
+(defalias mayk (tap-hold-release 150 150  k (layer-toggle lalt-layer)))
+(defalias altl (tap-hold-release 150 150  a (layer-toggle lalt-layer)))
+(defalias mayd (tap-hold-release 150 150  d (layer-toggle lalt-layer)))
+;; (defalias mayd (tap-hold-release-timeout 200 500 d (layer-toggle lalt-layer) d))
+;; (defalias mayk (tap-hold-release 200 200 k (layer-toggle lalt-layer)))
+(defalias lyralt (layer-toggle lalt-layer))
+(defalias  fkitt (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focuskitty.sh"))
+(defalias  fcode (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusCode.sh"))
+(defalias  farc (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusArc.sh"))
+(defalias  fsyst (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusSystemSettings.sh"))
+(defalias  fzote (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focuszotero.sh"))
+(defalias  fupdf (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusUPDF.sh"))
+(defalias  fpdfe (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusPDFExpert.sh"))
+(defalias  ffind (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusFinder.sh"))
+(defalias  fline (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusLINE.sh"))
+(defalias  fobsi (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusObsidian.sh"))
+(defalias  fnoti (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusNotion.sh"))
+(defalias  fnota (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusNotability.sh"))
+(defalias  fzoom (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focuszoom.us.sh"))
+(defalias  fmicr (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusMicrosoftPowerPoint.sh"))
+(defalias  fcanv (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/focusCanva.sh"))
+
+;; Language overlay commands
+;; (defalias  showth (cmd osascript -e "tell application \"Hammerspoon\" to execute lua code \"showThaiIndicator()\""))
+;; (defalias  showen (cmd osascript -e "tell application \"Hammerspoon\" to execute lua code \"showEnglishIndicator()\""))
+
+(defalias showth (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/show-thai.sh"))
+(defalias showen (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/show-english.sh"))
+
+;; (defalias  showth (cmd sudo -u xeno sh -c "echo "thai" | nc -U /tmp/kanata-language-indicator.sock"))
+;; (defalias  showen (cmd sudo -u xeno sh -c "echo "english" | nc -U /tmp/kanata-language-indicator.sock"))
+
+(defalias fapp  (multi (tap-hold 0 10 lalt lalt) (layer-toggle lalt-layer)))
+
+(deflayer lalt-layer
+  (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+  _    q    w    e    r    t    y    @fupdf i    @fobsi @fpdfe @fmicr ]    \ 
+  @thaq @farc @fsyst d    @ffind g    h    j    @fkitt @fline ;    '    ret 
+  @lthp @fzote @fzoom @fcanv @fcode @fnota @fnoti m    ,    .    /    @rthp up 
+  @fnb lctl lalt lmet           spc            rmet ralt left down rght
+)
+
+
+(deflayer colemak-dh-cmd
+  (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+  tab  q    w    f    p    b    j    l    u    y    ;    [    ]    \ 
+  @thadcmd a    r    s    @ayb g    m    n    e    i    o    '    ret 
+  @lshp @aap x    c    d    v    k    h    ,    .    /    @rshp up 
+  @fnb @lctlqwert @laltqwert @lmetqwert     spc            @rmetqwert @laltqwert left down rght
+)
+;; @lshp for esc
+
+(defalias thadcmd (tap-hold-press 200 200  (multi f19 (layer-switch thai-dh-cmd)) (layer-toggle qesc)))
+
+(defalias lmetqwert (tap-hold-press 200 200 C-M-h (multi (layer-toggle qwerty) lmet)))
+(defalias rmetqwert (tap-hold-press 200 200 esc (multi (layer-toggle qwerty) rmet)))
+(defalias lctlqwert (tap-hold-press 200 200 C-M-u (multi (layer-toggle qwerty) lctl)))
+;; (defalias lctlqwert (tap-hold-press 200 200 (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/ctrl") (multi (layer-toggle qwerty) lctl)))
+;; (defalias   (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/ctrl.sh"))
+(defalias laltqwert (tap-hold-press 200 200 C-M-v (multi (layer-toggle qwerty) lalt)))
+(defalias changelanguage (cmd sudo -u xeno sh -c "/Users/xeno/cycle.sh") )
+(defalias inputpro (cmd sudo -u xeno sh -c "open inputsourcepro://show"))
+(defalias fnb (tap-hold-release 200 200 (multi fn @changelanguage @inputpro) (layer-toggle fnlayer)))
+
+
+
+(deflayer colemak-dh
+  (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+  tab  q    w    f    p    b    j    l    u    y    ;    [    ]    \ 
+  @thad a    r    s    @ayb g    m    n    e    i    o    '    ret 
+  @lshp @aap x    c    d    v    k    h    ,    .    /    @rshp up 
+  @fnb @lctlp @laltp @lmetp         spc            rmet ralt left down rght
+)
+
+(defalias lshp (tap-hold-press 200 200 S-9 lsft))
+(defalias rshp (tap-hold-press 200 200 S-0 lsft))
+(defalias tha (multi f19 (layer-switch thai-dh)))
+(defalias cmcm (cmd sudo -u xeno sh -c "/Users/xeno/.config/runfiles/input-colemak"))
+(defalias cmth (cmd "/Users/xeno/.config/runfiles/input-thai"))
+(defalias cmen (cmd "/Users/xeno/.config/runfiles/input-eng"))
+;; (defalias thap (tap-hold-press 200 200 (multi (layer-switch thai) @cmcm @cmth) (layer-toggle qesc)))
+;; (defalias thap (tap-hold-press 200 200 (multi (layer-switch thai) @cmth) (layer-toggle qesc)))
+;; (defalias thap (tap-hold-press 200 200 (multi f19 (layer-switch thai)) (layer-toggle qesc)))
+(defalias thad (tap-hold-press 200 200  (multi f19 (layer-switch thai-dh)) (layer-toggle qesc)))
+;; (defalias thap (tap-hold-press 200 200 (multi (layer-switch thai) ) (layer-toggle qesc)))
+;; (defalias thap (tap-hold-press 200 200 (multi (layer-switch thai) (macro 1000 @cmen 1000 @cmcm 500 @cmth) ) (layer-toggle qesc)))
+
+(defalias lmetp (tap-hold-press 200 200 C-M-h lmet))
+(defalias lctlp (tap-hold-press 200 200 C-M-u  lctl))
+(defalias laltp (tap-hold-press 200 200 C-M-v lalt))
+
+;; (defalias  ybfp (cmd sudo -u xeno sh -c "yabai -m space --focus prev || yabai -m space --focus last && /Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function3"))
+;; (defalias  ybfn (cmd sudo -u xeno sh -c  "yabai -m space --focus next || yabai -m space --focus first && /Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function2"))
+;; (defalias  ybfn (cmd sudo -u xeno sh -c  "/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function2"))
+;; cmd bash -c "echo hello world"
+;; (defalias ybfn (cmd sudo -u xeno sh -c "echo nextspace > /tmp/command_pipe"))
+(defalias ybfn (cmd sudo -u xeno sh -c "~/client nextspace"))
+(defalias ybfp ( cmd sudo -u xeno sh -c "~/client prevspace"))
+
+(defalias  ybfu (cmd sudo -u xeno sh -c "yabai -m window --focus stack.prev || yabai -m window --focus stack.last && ~/client mission"))
+(defalias  ybfd (cmd sudo -u xeno sh -c "yabai -m window --focus stack.next || yabai -m window --focus stack.first && ~/client mission"))
+
+
+(defalias  ybsp (cmd sudo -u xeno sh -c "yabai -m space --move prev || yabai -m space --move last && ~/client space_windows_change"))
+(defalias  ybsn (cmd sudo -u xeno sh -c "yabai -m space --move next || yabai -m space --move first && ~/client space_windows_change"))
+
+;; yabai -m window --focus "$(yabai -m query --windows | jq 'map(select(.app == "Arc")) | .[0].id')";
+
+;; (defalias  ybaa (cmd sudo -u xeno sh -c "/Users/xeno/.config/skhd/focusArc.sh"))
+;; (defalias  ybac (cmd sudo -u xeno sh -c "/Users/xeno/.config/skhd/focusCode.sh"))
+;; (defalias  ybak (cmd sudo -u xeno sh -c "/Users/xeno/.config/skhd/focusKitty.sh"))
+
+(defalias  ybaa C-A-S-M-a)
+(defalias  ybac C-A-S-M-v)
+(defalias  ybak C-A-S-M-k)
+
+
+(defalias ayb (tap-hold-release 200 200 t (layer-toggle yabai)))
+(defalias asyb (layer-toggle shift-yabai))
+
+(defalias aap (tap-hold-release 200 200 z (layer-toggle app)))
+
+(defalias aspc (tap-hold-press 200 200 spc (layer-toggle space)))
+(defalias alen (multi (layer-switch qwerty) @cmen))
+
+
+;; 
+;; (defalias thaq (tap-hold-press 200 200  (multi f13 (layer-switch thai-q)) (layer-toggle qesc)))
+;; (defalias engq (tap-hold-press 200 200 (multi  f13 (layer-switch qwerty)) (layer-toggle qesc)))
+
+;; (deflayer thai-q
+;;   (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+;;   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+;;   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+;;   @engq a    s    d    @mayb g    h    j    k    l    ;    '    ret 
+;;   @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+;;   @grvch @fnt lalt lmet           spc            rmet ralt left down rght
+;; )
+
+(defalias alacq (multi (layer-switch colemak-dh-cmd) @cmen))
+(defalias nump (layer-switch numpad))
+(defalias pdfe (layer-switch pdfexpert))
+
+(deflayer qesc
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  esc  @nump @pdfe    _    _    _    _    @ybpw @alaq @ybnw @alen @alacq @alathaidhcmd @alathaiqwert 
+  _    esc  _    _    _    _    left down up   rght _    _    esc 
+  _    _    _    _    _    _    _    _    _    _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+(defalias  ybpw (cmd sudo -u xeno sh -c "yabai -m window --focus prev || yabai -m window --focus last"))
+(defalias  ybnw (cmd sudo -u xeno sh -c  "yabai -m window --focus next || yabai -m window --focus first"))
+(defalias alaq (multi (layer-switch colemak-dh) @cmen))
+
+(defalias alathaidhcmd (multi @cmth (layer-switch thai-dh-cmd)))
+
+(defalias alathaiqwert (multi @cmth (layer-switch thai-q)))
+
+(defalias  fu1 (cmd sudo -u xeno sh -c "/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/scl --function1"))
+(defalias  fu2 (cmd sudo -u xeno sh -c "/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/scl --function2"))
+(defalias  ybr (cmd sudo -u xeno sh -c  "yabai --restart-service"))
+
+(deflayer yabai
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    @yb1 @yb2 @yb3 @yb4 @yb5 @yb6 @yb7 @yb8 @yb9 _    _    _    _   
+  _    @fu1 @fu2 @feyabai @ybak _    @ybfd @ybfn @fu1 @fu2 @ybr _    _    _ 
+  _    @fayabai @fsyabai @asyb _    _    @ybfp @ybfu @ybfd @ybfn _    _    esc 
+  _    _    _    @ybac _    _    _    @switchlayout _    _    _    _    _ 
+  _    _    _    _              @cmdspc        _    _    _    _    _   
+)
+
+(defalias  yb1 (cmd sudo -u xeno sh -c "yabai -m space --focus 1"))
+(defalias  yb2 (cmd sudo -u xeno sh -c "yabai -m space --focus 2"))
+(defalias  yb3 (cmd sudo -u xeno sh -c "yabai -m space --focus 3"))
+(defalias  yb4 (cmd sudo -u xeno sh -c "yabai -m space --focus 4"))
+(defalias  yb5 (cmd sudo -u xeno sh -c "yabai -m space --focus 5"))
+(defalias  yb6 (cmd sudo -u xeno sh -c "yabai -m space --focus 6"))
+(defalias  yb7 (cmd sudo -u xeno sh -c "yabai -m space --focus 7"))
+(defalias  yb8 (cmd sudo -u xeno sh -c "yabai -m space --focus 8"))
+(defalias  yb9 (cmd sudo -u xeno sh -c "yabai -m space --focus 9"))
+
+
+(defalias cmdspc M-spc)
+
+
+(deflayer app
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _ 
+  _    _    _    @asyb _    _    @ybfp @ybfu @ybfd @ybfn _    _    esc 
+  _    _    _    _    @ybac @ybaa _    _    _    _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+
+(deflayer shift-yabai
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    @ybsn _    _    _    _    _    _ 
+  _    @ybaa _    @asyb _    _    @ybsp _    _    @ybsn _    _    esc 
+  _    _    _    _    _    _    _    @ybsp _    _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+(deflayer fs-yabai
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    @ybsn _    _    _    _    _    _ 
+  _    @ybaa _    @asyb _    _    @moveprevspace @killwindow @deleteemptyspace @movenextspace _    _    esc 
+  _    _    _    _    _    _    @addlastspace _    _    _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+(deflayer fa-yabai
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    @ybsn _    _    _    _    _    _ 
+  _    @ybaa _    @asyb _    _    @addprevspace @moveprevspace @deleteemptyspace @addnextspace _    _    esc 
+  _    _    _    _    _    _    _    @ybsp _    _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+(deflayer fe-yabai
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    @ybsn _    _    _    _    _    _ 
+  _    @ybaa _    @asyb _    _    @addprevspace @moveprevspace @deleteemptyspace @addnextspace _    _    esc 
+  _    _    _    _    _    _    @addlastspace _    _    _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+
+(defalias  killwindow (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/killWindow.sh"))
+(defalias  addnextspace (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/addNextSpace.sh && ~/client space_create"))
+(defalias  addprevspace (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/addPrevSpace.sh && ~/client space_create"))
+(defalias  movenextspace (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/moveNextSpace.sh"))
+(defalias  moveprevspace (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/movePrevSpace.sh"))
+(defalias  deleteemptyspace (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/deleteEmptySpace.sh && ~/client mission"))
+(defalias  addlastspace (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/addLastSpace.sh"))
+(defalias  switchlayout (cmd sudo -u xeno sh -c "/Users/xeno/ungScript/kanataScript/switchLayout.sh"))
+;; index=$(yabai -m query --spaces --space | jq ".index") && yabai -m space 1 --create && next_index=$((index+1)) && yabai -m space last --move "${next_index}" && yabai -m space --focus "${next_index}"
+
+
+;; (defalias  ybsp (cmd sudo -u xeno sh -c "yabai -m space --move prev || yabai -m space --move last && sketchybar --trigger space_windows_change && sketchybar --trigger space_change"))
+;; (defalias addnextspace (cmd sudo -u xeno sh -c "yabai -m space --focus prev || yabai -m space --focus lastindex=$(yabai -m query --spaces --space | jq ".index") && yabai -m space 1 --create && next_index=$((index+1)) && yabai -m space last --move "${next_index}" && yabai -m space --focus "${next_index}""))
+;; (defalias addnextspace (cmd sudo -u xeno sh -c "index=\$(yabai -m query --spaces --space | jq \".index\") && yabai -m space 1 --create && next_index=\$((index+1)) && yabai -m space last --move \"\${next_index}\" && yabai -m space --focus \"\${next_index}\""))
+;; (defalias  ybsn (cmd sudo -u xeno sh -c "yabai -m space --move next || yabai -m space --move first && sketchybar --trigger space_windows_change && sketchybar --trigger space_change"))
+
+(defalias fsyabai (layer-toggle fs-yabai))
+(defalias fayabai (layer-toggle fa-yabai))
+(defalias feyabai (layer-toggle fe-yabai))
+;; (defalias fzyabai (layer-toggle fz-yabai))
+
+(deflayer space
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    esc  _    _    _    _    _ 
+  _    @ybaa _    @asyb _    _    left down up   rght _    _    esc 
+  _    _    _    _    _    _    _    _    esc  _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+;; (defalias eng (multi f19 (layer-switch src)))
+;; (defalias eng (multi  (layer-switch colemak-dh) @cmen))
+
+(defalias engd (tap-hold-press 200 200 (multi  f19 (layer-switch colemak-dh)) (layer-toggle qesc)))
+(defalias lthp (tap-hold-press 200 200 S-9 lsft))
+(defalias rthp (tap-hold-press 200 200 S-0 lsft))
+
+(defalias mayb (tap-hold-release 200 200 f (layer-toggle yabai)))
+(defalias dalt (tap-hold-release 200 200 d (multi lctrl lsft lmet)))
+
+
+(deflayer thai-dh
+  (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+  @engd a    s    d    @mayb g    h    j    k    l    ;    '    ret 
+  @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+  @fnb lctl lalt lmet           spc            rmet ralt left down rght
+)
+
+(defalias engdcmd (tap-hold-press 200 200 (multi  f19 (layer-switch colemak-dh-cmd)) (layer-toggle qesc)))
+(deflayer thai-dh-cmd
+  (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc 
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \ 
+  @engdcmd a    s    d    @mayb g    h    j    k    l    ;    '    ret 
+  @lthp z    x    c    v    b    n    m    ,    .    /    @rthp up 
+  @fnb @lctlqwert @laltqwert @lmetqwert     spc            rmet ralt left down rght
+)
+(defalias
+  ;; shifted keys
+  { S-[
+  } S-]
+  : S-;
+
+  ;; alias numbers as themselves for use in macro
+  8 8
+  0 0
+  4 4
+  5 5 
+  6 6
+)
+(defalias lctlqwertmacro (tap-hold-press 200 200 (macro (f19 C-M-u f19))  (multi (layer-toggle qwerty) lctl)))
+(defalias
+  lca (macro @4 @5 @6)
+  lcb (macro @4 @5 @4)
+  lcc (macro @5 @5 @5)
+)
+(deflayer numpad
+  (lrld-num 1) brdn brup lrpv lrnx bldn blup prev pp   next mute vold volu 
+  _    _    _    _    _    _    @lcc    _    _    _    _    _    _    _   
+  _    @lcc    b    a    l    @lcc   @lca    4    5  6     ret  _    _    _ 
+  @engdcmd t    x    ,    =    @lcc    @lcb    1    2    3    _    _    _  
+  _    _    x    _    c   ,    0    0    _    _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+
+(deflayer pdfexpert
+  _    f1   f2   @pen   @callout   @comment   @eraser   f7   f8   f9   f10  f11  f12 
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _ 
+  @thaq    _  _    _    _    _    _    _    _    _    _    _    _  
+  _ _ _ _ _    _    _    _    _    _    _    _    _ 
+  _    f13  bspc _              _              _    _    _    _    _   
+)
+
+
+
+(deflayer fnlayer
+  _    f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12 
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _ 
+  _    bspc _    _    _    _    _    _    _    _    _    _    _  
+  @pen @eraser @callout @comment _    _    _    _    _    _    _    _    _ 
+  _    f13  bspc _              _              _    _    _    _    _   
+)
+
+(defalias pen  C-M-p)
+(defalias eraser M-C-e)
+(defalias callout C-M-u)
+(defalias comment C-M-t)
+
+
+
+(deflayer blank
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _   
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _ 
+  _    _    _    _    _    _    _    _    _    _    _    _    _  
+  _    _    _    _    _    _    _    _    _    _    _    _    _ 
+  _    _    _    _              _              _    _    _    _    _   
+)
+
+;; alias: shortcut label for action
+;; list = ( sequence of strings/nested lists separated by space )
+
+;; (defalias cap (tap-hold 200 200 caps lctl))
+
+#|
+
+Variables: shortcut label for string, list, can refer to previously defined variables
+can be used as components of actions
+cannot be used in defcfg, defsrc, deflocalkeys, can't substitute layer, action name
+
+(defvar
+tap-timeout 100
+hold-timeout 200
+tt $tap-timeout
+ht $hold-timeout
+)
+
+(defalias
+th1 (tap-hold $tt $ht caps lctl)
+th2 (tap-hold $tt $ht spc lsft)
+)
+
+concat: second item of defvar, list that begins with concat will concatenate all items in list to single string
+(defvar
+rootpath "/home/user"
+otherpath (concat $rootpath "/other")
+)
+
+
+Macro
+|#
