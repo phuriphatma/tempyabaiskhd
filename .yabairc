@@ -1,0 +1,90 @@
+# for this to work you must configure sudo such that
+# it will be able to run the command without password
+# YABAI_CERT=yabai-cert sh -c "$(curl -fsSL "https://git.io/update-yabai")" &
+
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+sudo yabai --load-sa
+
+yabai -m config layout stack
+yabai -m config external_bar               "main:37:0"
+
+
+# don't know why can disable it now (updated so it works magically?, but now no need to send sketchybar trigger)
+# focus window after active space changes
+# yabai -m signal --add event=space_changed action="yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id)"
+# yabai -m signal --add event=mission_control_exit action="sketchybar --trigger space_windows_change && sketchybar --trigger space_change"
+# yabai -m signal --add event=window_focused action="sketchybar --trigger window_focus"
+# yabai -m signal --add event=space_changed action="sketchybar --trigger space_windows_change && sketchybar --trigger space_change"
+# yabai -m signal --add event=window_moved action="sketchybar --trigger space_windows_change && sketchybar --trigger space_change"
+
+# set mouse interaction modifier key (default: fn)
+yabai -m config mouse_modifier fn
+
+# set modifier + left-click drag to move window (default: move)
+yabai -m config mouse_action1 move
+
+# set modifier + right-click drag to resize window (default: resize)
+yabai -m config mouse_action2 resize
+
+
+yabai -m config window_border off
+
+# yabai -m rule --add app="^Spotify$" scratchpad="Spotify" opacity=".95" grid="11:11:1:1:9:9"
+# yabai -m rule --add app="^Arc$" scratchpad="Slack" opacity=".95" grid="11:11:1:1:9:9"
+# yabai -m rule --add app="^Calendar$" scratchpad="Calendar" opacity=".95" grid="11:11:1:1:9:9"
+# yabai -m rule --add app="^kitty$" title="^freebird" scratchpad="kitty" opacity=".9" grid=3:3:0:0:3:1
+# yabai -m signal --add event=space_changed action="~/spaceChanged.sh"
+
+# yabai -m signal --add event=application_front_switched action="~/spaceChanged.sh"
+
+# yabai -m signal --add event=space_changed action="~/spaceChanged.sh"
+
+yabai -m signal --add event=space_changed action="~/client space_change"
+yabai -m signal --add event=mission_control_exit action="~/client mission"
+yabai -m signal --add event=space_created action="~/client mission"
+yabai -m signal --add event=space_destroyed action="~/client space_create"
+yabai -m signal --add event=window_created action="~/client space_create"
+yabai -m signal --add event=window_destroyed action="~/client space_create"
+yabai -m signal --add event=window_moved action="~/client mission"
+
+yabai -m signal --add event=application_front_switched action="~/client space_change"
+
+
+
+
+
+
+# yabai -m signal --add event=mission_control_exit action="~/client space_change"
+
+# yabai -m signal --add event=application_front_switched action="~/spaceChanged.sh"
+# yabai -m signal --add event=application_front_switched action="~/appswitch.sh"
+# yabai -m signal --add event=display_moved action="~/spaceChanged.sh"
+# yabai -m signal --add event=window_moved action="~/windowmoved.sh"
+
+
+
+
+
+
+
+
+
+
+# yabai -m signal --add event=space_changed action="/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function1"
+# yabai -m signal --add event=mission_control_exit action="/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function1"
+
+
+
+
+
+# yabai -m signal --add event=space_changed action="/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function1"
+# yabai -m signal --add event=space_created action="/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function1"
+# yabai -m signal --add event=application_front_switched action="/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function1"
+# yabai -m signal --add event=window_title_changed action="/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function1"
+
+# yabai -m signal --add event=window_focused action="/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function1"
+#
+#
+# yabai -m signal --add event=window_moved action="/Users/xeno/Documents/app\ new\ development/sendNotification/sendNotification/mnb --function1"
+#
+
